@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <form th:action="@{/book/regist}" th:object="${bookRegistRequest}" method="post" enctype="multipart/form-data">
+    <div class="file-field input-field">
+      <div class="btn">
+        <span>File</span>
+        <input type="file" name="thumbnail">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea th:field="*{title}" id="icon_prefix2" class="materialize-textarea" ></textarea>
+        <span th:errors="*{title}" class="helper-text" ></span>
+        <label for="icon_prefix2">Title</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea th:field="*{author}"  id="icon_prefix3" class="materialize-textarea"></textarea>
+        <span th:errors="*{author}" class="helper-text" ></span>
+        <label for="icon_prefix3">Author</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea th:field="*{info}" id="icon_prefix4" class="materialize-textarea"></textarea>
+        <span th:errors="*{info}" class="helper-text" ></span>
+        <label for="icon_prefix4">Info</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s6">
+        <select name="category">
+            <option th:each="cate: ${category}" th:value="${cate}" th:text="${cate}"></option>
+        </select>
+        <label>Materialize Select</label>
+      </div>
+    </div>
+    <button class="btn waves-effect waves-light offset-s1" type="submit" name="action">
+      Submit
+      <i class="material-icons right">send</i>
+    </button>
+  </form>
+
+</main>
+</body>
+</html>

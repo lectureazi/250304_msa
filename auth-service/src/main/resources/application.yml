@@ -1,0 +1,92 @@
+server:
+  servlet:
+    session:
+      cookie:
+        name: AUTH_SERVER_SESSION_ID
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  port: 8081
+
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          grepp:
+            registration:
+              client-id: "grepp"
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "refresh_token"
+              redirect-uris:
+                - "http://localhost:8080/login/oauth2/code/grepp"
+              post-logout-redirect-uris:
+                - "http://localhost:8080"
+              scopes:
+                - "openid"
+                - "profile"
+            require-authorization-consent: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            logger-level: full
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: jdbc:mysql://localhost:3306/bookmanager-jpa?useUnicode=true&characterEncoding=utf8
+    username: bm
+    password: 123qwe!@#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+  data:
+    redis:
+      host: redis-11686.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com
+      username: default
+      password: QQZmNXNqAjyvaW3xfdn314mWTGeGsW9L
+      port: 11686
+      ssl:
+        enabled: true
+  application:
+    name: auth-service
+
+eureka:
+  instance:
+    instance-id: auth-service-A
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    root: info
+    org:
+      hibernate:
+        SQL: info
+        type:
+          descriptor:
+            sql: info
+      springframework:
+        cloud:
+          openfeign: info
+        security: info
+
+jwt:
+  secrete: sskfjsasdkfsdklfjwioesdfjslkdfjsdlkfjsdlf
+  access-expiration: 3000
+  refresh-expiration: 604800000

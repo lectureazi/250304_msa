@@ -1,0 +1,9 @@
+spring:
+  data:
+    redis:
+      host: redis-19155.c62.us-east-1-4.ec2.redns.redis-cloud.com
+      username: default
+      password: cOhk8PAHKxBWOMZ7v08o2jV5wiMOlkUx
+      port: 19155
+      ssl:
+        enabled: true

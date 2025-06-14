@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <h4>Book List</h4>
+  <ul class="collection book-list">
+      <li th:each="book: ${page.content()}" class="collection-item avatar">
+          <img th:if="${book.images.isEmpty()}" src="#" alt="thumbnail" class="circle">
+          <img th:unless="${book.images.isEmpty()}" th:each="image : ${book.images}"
+               th:if="${image.type.name() == 'THUMBNAIL'}"
+               th:src="${image.url}" alt="thumbnail" class="circle">
+
+        <span class="title" th:text="${book.title}"></span>
+        <p th:text="${book.author}"></p>
+        <a href="#" class="secondary-content"><i class="material-icons">grade</i></a>
+      </li>
+  </ul>
+  <div class="row" th:insert="~{fragments :: frg_pagination}">
+  </div>
+
+</main>
+</body>
+</html>

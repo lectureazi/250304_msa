@@ -1,0 +1,56 @@
+app:
+  domain: http://localhost:8080
+
+server:
+  port: 8083
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+logging:
+  level:
+    root: info
+    org:
+      hibernate:
+        SQL: info
+        type:
+          descriptor:
+            sql: info
+      springframework:
+        cloud:
+          openfeign: info
+        client:
+          RestTemplate: info
+        security: info
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    username: azimemory@gmail.com
+    password: kfackugouktuxmhg
+    properties:
+      mail:
+        stmp:
+          auth: true
+        smtp:
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: redis-19155.c62.us-east-1-4.ec2.redns.redis-cloud.com
+      username: default
+      password: cOhk8PAHKxBWOMZ7v08o2jV5wiMOlkUx
+      port: 19155
+      ssl:
+        enabled: true
+  application:
+    name: mail-service
+
+eureka:
+  instance:
+    instance-id: mail-service-A
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

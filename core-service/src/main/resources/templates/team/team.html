@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link href="/css/admin-materialize.min.css" rel="stylesheet">
+  <style>
+    .circle{
+      text-align: center;
+    }
+
+    .sender{
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 15px;
+    }
+
+    .sendTime{
+      font-size: 10px;
+    }
+
+  </style>
+
+</head>
+<body>
+<main layout:fragment="content">
+  <h4>team member 환영합니다!</h4>
+  <div class="row equal-height-grid">
+
+    <div class="col l12 s12">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title">Jane Doe</span>
+          <p>Currently Online</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-content" >
+          <div class="chat-wrapper" id="chatMessages">
+            <div class="chat-message">
+              <div class="circle" >
+                <p class="sendTime">18:01</p>
+              </div>
+              Lo-fi you probably haven't heard of them etsy leggings raclette kickstarter four dollar toast. Raw denim fingerstache food truck chia health goth synth. Forage man bun intelligentsia freegan PBR&amp;B banh mi asymmetrical chambray.
+            </div>
+            <div class="chat-message right">
+              <div class="circle">
+                <p class="sender">super</p>
+                <p class="sendTime">18:03</p>
+              </div>
+              Lo-fi you probably haven't heard of them.
+            </div>
+            <div class="chat-message right coalesce">
+              etsy leggings raclette kickstarter four dollar toast.
+            </div>
+            <div class="chat-message right coalesce">
+              Raw denim fingerstache food truck chia health goth synth. Forage man bun intelligentsia freegan PBR&amp;B banh mi asymmetrical chambray.
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <div class="chat-input-bar">
+            <textarea id="chatText" class="materialize-textarea" style="height: 72px;"></textarea>
+            <button type="submit" id="btnSend">
+              <i class="material-icons">send</i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-message" id="chatMessageTemplate">
+    <div class="circle" >
+      <p class="sender"></p>
+      <p class="sendTime"></p>
+    </div>
+  </div>
+</main>
+
+<th:block layout:fragment="script">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js" integrity="sha512-/CUtA84sWWqWEBejNrrtWa7Yc4cth3Ome2ymvCKOo9YcZ4sh98tndUy4LutE2xGcAgD4fyz16y+gSyJdGCB5ww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+  <script th:inline="javascript">
+
+    const chatLog = {};
+    const user = [[${username}]];
+
+    const stompClient = new StompJs.Client({
+      brokerURL: 'ws://localhost:8080/connect'
+    });
+
+    stompClient.onConnect = frame => {
+      console.log('Connected: ' + frame);
+      stompClient.subscribe('/topic/team/[[${teamId}]]/chat', chat => {
+        console.dir(chat);
+        const data = JSON.parse(chat.body);
+        console.dir(data);
+        renderChatMessage(data.data);
+      });
+
+      stompClient.subscribe('/user/'+ user +'/queue/errors', error => {
+        alert('error 가 발생했습니다. 콘솔을 확인하세요.');
+        console.error(JSON.parse(error.body));
+      });
+    };
+
+    document.querySelector('#btnSend').addEventListener('click', ev => {
+      const chatText = document.querySelector('#chatText').value;
+      stompClient.publish({
+        destination: "/app/team/[[${teamId}]]/chat",
+        body: chatText
+      })
+    });
+
+    stompClient.onWebSocketError = (error) => {
+      console.error('Error with websocket', error);
+    };
+
+    stompClient.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message']);
+      console.error('Additional details: ' + frame.body);
+    };
+
+    stompClient.activate();
+
+    const renderChatMessage = data => {
+
+      let chatHtml = document.querySelector('#chatMessageTemplate').cloneNode(true);
+      chatHtml.id = null;
+      if(user === data.sender) {
+        chatHtml.classList.add('right');
+      }
+
+      if(chatLog[data.sender] === data.time){
+        chatHtml.classList.add('coalesce');
+        chatHtml.textContent = DOMPurify.sanitize(data.content);
+        document.querySelector('#chatMessages').appendChild(chatHtml);
+        return;
+      }
+
+      chatHtml.querySelector('.sender').textContent = data.sender;
+      chatHtml.querySelector('.sendTime').textContent = data.time;
+      const textNode = document.createTextNode(DOMPurify.sanitize(data.content));
+      chatHtml.appendChild(textNode);
+      document.querySelector('#chatMessages').appendChild(chatHtml);
+      chatLog[data.sender] = data.time;
+    }
+
+
+  </script>
+</th:block>
+
+</body>
+</html>
